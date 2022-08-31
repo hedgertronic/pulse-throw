@@ -1,10 +1,12 @@
 [tool.poetry]
 authors = ["Josh Hejka <josh@joshhejka.com>"]
 description = "Tools for acquiring and analyzing Pulse API data."
+homepage = "https://github.com/hedgertronic/pulse-throw"
 license = "MIT"
 name = "pulse-throw"
 readme = "README.md"
-version = "0.0.0"
+repository = "https://github.com/hedgertronic/pulse-throw"
+version = "0.1.0"
 
 [tool.poetry.dependencies]
 Authlib = "^1.0.1"
