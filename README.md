@@ -57,24 +57,22 @@ refresh_token = os.getenv("REFRESH_TOKEN") or ""
 Once the environment variables are loaded, a `PulseClient` object can created:
 
 ```python
-import pulse
+import pulse_throw as pt
 
 # Using a traditional constructor and destructor
-client = pulse.PulseClient(client_id, client_secret, refresh_token)
+client = pt.PulseClient(client_id, client_secret, refresh_token)
 ...
 del client
 
 # Using a context manager that destructs automatically
-with pulse.PulseClient(client_id, client_secret, refresh_token) as client:
+with pt.PulseClient(client_id, client_secret, refresh_token) as client:
     ...
 ```
 
 The Pulse client will authenticate the client upon construction by default. This involves fetching an access token from the API. If you don't want this request to happen automatically, pass `authenticate=False` into the object constructor. In order to make other requests, you will need to manually call the `authenticate()` method so that the other requests have the proper authorization headers:
 
 ```python
-import pulse
-
-client = pulse.PulseClient(
+client = pt.PulseClient(
     client_id, client_secret, refresh_token, authenticate=False
 )
 
@@ -228,17 +226,17 @@ events = client.get_events(
 )
 
 # Get all throw events marked with the desired tag
-pre_game = pulse.filter_by_tag(
+pre_game = pt.filter_by_tag(
     events[client.user_id], tags="Pre-Game"
 )
 
 # Get all throw events marked with one of multiple tags
-non_game = pulse.filter_by_tag(
+non_game = pt.filter_by_tag(
     events[client.user_id], tags=["Pre-Game", "Plyo", "Warmup"]
 )
 
 # Get all throw events without the desired tag
-non_plyos = pulse.filter_by_tag(
+non_plyos = pt.filter_by_tag(
     events[client.user_id], tags="Plyo", blacklist=True
 )
 ```
@@ -256,10 +254,10 @@ events = client.get_events(
 )
 
 # Get all throw events that are not simulated
-non_simulated = pulse.filter_simulated(events[client.user_id])
+non_simulated = pt.filter_simulated(events[client.user_id])
 
 # Get all throw events that are simulated
-simulated = pulse.filter_simulated(
+simulated = pt.filter_simulated(
     events[client.user_id], get_simulated=True
 )
 ```
@@ -277,10 +275,10 @@ events = client.get_events(
 )
 
 # Get all throw events that are high effort
-high_effort = pulse.filter_high_effort(events[client.user_id])
+high_effort = pt.filter_high_effort(events[client.user_id])
 
 # Get all throw events that are not high effort
-low_effort = pulse.filter_high_effort(
+low_effort = pt.filter_high_effort(
     events[client.user_id], get_high_effort=False
 )
 ```
@@ -304,10 +302,10 @@ events = client.get_events(
 )
 
 # Make sure to access the desired user from events
-norm_workload = pulse.sum_workload(events[client.user_id])
+norm_workload = pt.sum_workload(events[client.user_id])
 
 # Compute sum using unnormalized values
-workload = pulse.sum_workload(
+workload = pt.sum_workload(
     events[client.user_id], normalized=False
 )
 ```
@@ -315,9 +313,9 @@ workload = pulse.sum_workload(
 This function can be useful for summing the workload of throws with a certain tag:
 
 ```python
-pre_game = pulse.filter_by_tag(events, tag="Pre-Game")
+pre_game = pt.filter_by_tag(events, tag="Pre-Game")
 
-pre_game_workload = pulse.sum_workload(pre_game)
+pre_game_workload = pt.sum_workload(pre_game)
 ```
 
 ### Compute Acute Workload
@@ -333,17 +331,17 @@ snapshots = client.get_snapshots(
 )
 
 # Make sure to access the desired user from snapshots
-norm_acute_workload = pulse.compute_acute_workload(
+norm_acute_workload = pt.compute_acute_workload(
     snapshots[client.user_id]
 )
 
 # Compute acute workload using unnormalized values
-acute_workload = pulse.compute_acute_workload(
+acute_workload = pt.compute_acute_workload(
     snapshots[client.user_id], normalized=False
 )
 ```
 
-Acute workload is the weighted average of one-day workloads over a 9-day period. The weights for the nine days are defined by `pulse.ACUTE_WEIGHTS`:
+Acute workload is the weighted average of one-day workloads over a 9-day period. The weights for the nine days are defined by `pt.ACUTE_WEIGHTS`:
 
 ```python
 ACUTE_WEIGHTS = [1.3, 1.225, 1.15, 1.075, 1.0, 0.925, 0.85, 0.775, 0.7]
@@ -366,12 +364,12 @@ snapshots = client.get_snapshots(
 )
 
 # Make sure to access the desired user from snapshots
-norm_chronic_workload = pulse.compute_chronic_workload(
+norm_chronic_workload = pt.compute_chronic_workload(
     snapshots[client.user_id]
 )
 
 # Compute acute workload using unnormalized values
-chronic_workload = pulse.compute_chronic_workload(
+chronic_workload = pt.compute_chronic_workload(
     snapshots[client.user_id], normalized=False
 )
 ```
@@ -393,10 +391,10 @@ snapshots = client.get_snapshots(
 )
 
 # Make sure to access the desired user from snapshots
-norm_acr = pulse.compute_acr(snapshots[client.user_id])
+norm_acr = pt.compute_acr(snapshots[client.user_id])
 
 # Compute ACR using unnormalized values
-acr = pulse.compute_acr(snapshots[client.user_id], normalized=False)
+acr = pt.compute_acr(snapshots[client.user_id], normalized=False)
 ```
 
 Acute/chronic workload ratio is the quotient of acute workload and chronic workload over a 28-day period.

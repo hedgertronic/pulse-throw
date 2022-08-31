@@ -21,16 +21,16 @@ Examples:
         refresh_token = os.getenv("REFRESH_TOKEN") or ""
 
     Creating a client:
-        import pulse
+        import pulse_throw as pt
 
-        client = pulse.PulseClient(client_id, client_secret, refresh_token)
+        client = pt.PulseClient(client_id, client_secret, refresh_token)
         del client
 
-        with pulse.PulseClient(client_id, client_secret, refresh_token) as client:
+        with pt.PulseClient(client_id, client_secret, refresh_token) as client:
             ...
 
     Making requests for a single user (the owner of the session):
-        client = pulse.PulseClient(client_id, client_secret, refresh_token)
+        client = pt.PulseClient(client_id, client_secret, refresh_token)
 
         events = client.get_events()
         snapshots = client.get_snapshots()
