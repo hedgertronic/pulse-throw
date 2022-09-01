@@ -211,10 +211,10 @@ class PulseClient:
 
         Args:
             start_date (str, optional): The earliest date for which to get data.
-                Expected in ISO 8601 format (YYYY-MM-DD). Defaults to eight days before
-                `end_date`.
+                Expected in ISO 8601 format (`YYYY-MM-DD`). Defaults to eight days
+                before `end_date`.
             end_date (str, optional): The latest date for which to get data. Expected
-                in ISO 8601 format (YYYY-MM-DD). Defaults to today's date.
+                in ISO 8601 format (`YYYY-MM-DD`). Defaults to today's date.
             user_ids (str | list[str], optional): User IDs for whom to get data. IDs
                 must belong to the owner of the session or a member their team.
                 Defaults to the ID of the owner of the session.
@@ -266,10 +266,10 @@ class PulseClient:
 
         Args:
             start_date (str, optional): The earliest date for which to get data.
-                Expected in ISO 8601 format (YYYY-MM-DD). Defaults to eight days before
-                `end_date`.
+                Expected in ISO 8601 format (`YYYY-MM-DD`). Defaults to eight days
+                before `end_date`.
             end_date (str, optional): The latest date for which to get data. Expected
-                in ISO 8601 format (YYYY-MM-DD). Defaults to today's date.
+                in ISO 8601 format (`YYYY-MM-DD`). Defaults to today's date.
             user_ids (str | list[str], optional): User IDs for whom to get data. IDs
                 must belong to the owner of the session or their team. Defaults to the
                 ID of the owner of the session.
@@ -494,7 +494,7 @@ def compute_acute_workload(
         snapshots (list[dict[str, Any]]): Daily snapshot data from `get_snapshots`
             endpoint.
         end_date (str, optional): Date for which to get acute workload. Expected in ISO
-            8601 format (YYYY-MM-DD). Defaults to the most recent date in `snapshots`.
+            8601 format (`YYYY-MM-DD`). Defaults to the most recent date in `snapshots`.
         normalized (bool): If true, will return normalized data. If false,
             will return unnormalized data. Defaults to true.
 
@@ -532,7 +532,7 @@ def compute_chronic_workload(
         snapshots (list[dict[str, Any]]): Daily snapshot data from `get_snapshots`
             endpoint.
         end_date (str, optional): Date for which to get chronic workload. Expected in
-            ISO 8601 format (YYYY-MM-DD). Defaults to the most recent date in
+            ISO 8601 format (`YYYY-MM-DD`). Defaults to the most recent date in
             `snapshots`.
         normalized (bool): If true, will return normalized data. If false,
             will return unnormalized data. Defaults to true.
@@ -568,7 +568,7 @@ def compute_acr(
         snapshots (list[dict[str, Any]]): Daily snapshot data from `get_snapshots`
             endpoint.
         end_date (str, optional): Date for which to get acute/chronic workload ratio.
-            Expected in ISO 8601 format (YYYY-MM-DD). Defaults to the most recent date
+            Expected in ISO 8601 format (`YYYY-MM-DD`). Defaults to the most recent date
             in `snapshots`.
         normalized (bool): If true, will return normalized data. If false,
             will return unnormalized data. Defaults to true.

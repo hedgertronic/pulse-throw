@@ -24,7 +24,7 @@ Tools for acquiring and analyzing Pulse API data.
 
 ## Installation
 
-The `pulse` module can be installed via pip:
+The `pulse_throw` module can be installed via pip:
 
 `pip install pulse-throw`
 
@@ -32,7 +32,7 @@ The `pulse` module can be installed via pip:
 
 In order to use the Pulse client, you must have a `client_id`, `client_secret`, and `refresh_token` provided by the Pulse team at Driveline.
 
-It is best practice to use these values stored in a `.env` file:
+It is best practice to store these values in a `.env` file:
 
 ```bash
 # Pulse credentials
@@ -61,7 +61,9 @@ import pulse_throw as pt
 
 # Using a traditional constructor and destructor
 client = pt.PulseClient(client_id, client_secret, refresh_token)
+
 ...
+
 del client
 
 # Using a context manager that destructs automatically
@@ -217,7 +219,7 @@ Gets all of the individual throw events for one or more users over a range of da
 
 ## Data Filtering Functions
 
-The `pulse` module contains functions that can filter event data based on certain characteristics.
+The `pulse_throw` module contains functions that can filter event data based on certain characteristics.
 
 ### Filter By Tag
 
@@ -291,7 +293,7 @@ low_effort = pt.filter_high_effort(
 
 ## Workload Functions
 
-The `pulse` module contains functions that are useful when manually performing workload calculations.
+The `pulse_throw` module contains functions that are useful when manually performing workload calculations.
 
 Since throw events and daily snapshots are stored in a dict indexed by user ID, the desired user ID must be accessed by key when passing data into the following functions. For indiviudal users (i.e. not coaches), the desired user ID will be the same as the owner of the session and can be accessed using `client.user_id`. For coaches, the `get_team()` endpoint can match players with their respective user IDs.
 
