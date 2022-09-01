@@ -24,6 +24,7 @@ Examples:
         import pulse_throw as pt
 
         client = pt.PulseClient(client_id, client_secret, refresh_token)
+        ...
         del client
 
         with pt.PulseClient(client_id, client_secret, refresh_token) as client:
@@ -40,7 +41,7 @@ Examples:
 
 Attributes:
     ACUTE_LENGTH (int): Length in days for the acute workload window.
-    ACUTE_WEIGHTS (List[float]): Weights used for acute workload calculations.
+    ACUTE_WEIGHTS (list[float]): Weights used for acute workload calculations.
 
     CHRONIC_LENGTH (int): Length in days for the chronic workload window.
 """
@@ -102,7 +103,7 @@ class PulseClient:
             authenticate (bool): Whether to fetch a token from the API upon
                 session creation. If false, `authenticate()` must be called manually.
                 Defaults to true.
-            kwargs (Dict[str, Any], optional): Additional arguments for OAuth2Session.
+            kwargs (dict[str, Any], optional): Additional arguments for OAuth2Session.
         """
         self._client_id = client_id
         self._client_secret = client_secret
@@ -158,7 +159,7 @@ class PulseClient:
         Returns info about the owner of the session.
 
         Returns:
-            Dict[str, str]: Response JSON data loaded into an object. Example:
+            dict[str, str]: Response JSON data loaded into an object. Example:
                 {
                     "id": "<id>",
                     "firstName": "<first-name>",
@@ -168,13 +169,13 @@ class PulseClient:
         """
         return self._make_request(method="POST", url_slug="user/get_profile")
 
-    def get_team(self) -> dict[str, str]:
+    def get_team(self) -> dict[str, Any]:
         """Make request to Get Team endpoint.
 
         Returns info about the owner of the session's team.
 
         Returns:
-            Dict[str, str]: Response JSON data loaded into an object. Example:
+            dict[str, Any]: Response JSON data loaded into an object. Example:
                 {
                     "team": {
                         "name": "TEAMNAME",
@@ -190,6 +191,8 @@ class PulseClient:
                             "email": "<player-email>"
                         },
                         ...
+                    ]
+                }
         """
         return self._make_request(method="POST", url_slug="user/get_team")
 
@@ -212,12 +215,12 @@ class PulseClient:
                 `end_date`.
             end_date (str, optional): The latest date for which to get data. Expected
                 in ISO 8601 format (YYYY-MM-DD). Defaults to today's date.
-            user_ids (str | List[str], optional): User IDs for whom to get data. IDs
+            user_ids (str | list[str], optional): User IDs for whom to get data. IDs
                 must belong to the owner of the session or a member their team.
                 Defaults to the ID of the owner of the session.
 
         Returns:
-            Dict[str, Any]: Response JSON data loaded into an object. Example:
+            dict[str, Any]: Response JSON data loaded into an object. Example:
                 {
                     "<id>": [
                         {
@@ -239,6 +242,8 @@ class PulseClient:
                             ]
                         },
                         ...
+                    ]
+                }
         """
         return self._make_request(
             method="POST",
@@ -265,12 +270,12 @@ class PulseClient:
                 `end_date`.
             end_date (str, optional): The latest date for which to get data. Expected
                 in ISO 8601 format (YYYY-MM-DD). Defaults to today's date.
-            user_ids (str | List[str], optional): User IDs for whom to get data. IDs
+            user_ids (str | list[str], optional): User IDs for whom to get data. IDs
                 must belong to the owner of the session or their team. Defaults to the
                 ID of the owner of the session.
 
         Returns:
-            Dict[str, Any]: Response JSON data loaded into an object. Example:
+            dict[str, Any]: Response JSON data loaded into an object. Example:
                 {
                     "<id>": [
                         {
@@ -291,6 +296,8 @@ class PulseClient:
                             "normalizedWorkload": 0.10925094783306122
                         },
                         ...
+                    ]
+                }
         """
         return self._make_request(
             method="POST",
@@ -308,7 +315,7 @@ class PulseClient:
         the token.
 
         Args:
-            kwargs (Dict[str, Any], optional): Additional arguments for `fetch_token()`.
+            kwargs (dict[str, Any], optional): Additional arguments for `fetch_token()`.
         """
         self.session.fetch_token(
             url=f"{self.API_URL}/oauth/token",
@@ -333,7 +340,7 @@ class PulseClient:
     ) -> dict[str, Any]:
         try:
             response = self.session.request(
-                method=method, url=f"{self.API_URL}/{url_slug}", **kwargs
+                method=method, url=f"{self.API_URL}/{url_slug}", timeout=30, **kwargs
             )
         except MissingTokenError as exc:
             raise MissingTokenError(
@@ -394,14 +401,14 @@ def filter_by_tag(
     """Filter throw events by tag or tags.
 
     Args:
-        events (List[Dict[str, Any]]): Individual throw data from `get_events` endpoint.
-        tags (str | List[str]): Single or multiple tags to match.
+        events (list[dict[str, Any]]): Individual throw data from `get_events` endpoint.
+        tags (str | list[str]): Single or multiple tags to match.
         blacklist (bool): If false, will return throw events with a matching
             tag. If true, will return throw events without a matching tag. Defaults to
             false.
 
     Returns:
-        List[Dict[str, Any]]: Throw events filtered by tags, either whitelisted or
+        list[dict[str, Any]]: Throw events filtered by tags, either whitelisted or
             blacklisted.
     """
     if isinstance(tags, str):
@@ -420,12 +427,12 @@ def filter_simulated(
     """Filter throw events based on simulated status.
 
     Args:
-        events (List[Dict[str, Any]]): Individual throw data from `get_events` endpoint.
+        events (list[dict[str, Any]]): Individual throw data from `get_events` endpoint.
         get_simulated (bool): If true, will return simulated throw events. If
             false, will return unsimulated throw events. Defaults to false.
 
     Returns:
-        List[Dict[str, Any]]: Throw events filtered by simulated status based on
+        list[dict[str, Any]]: Throw events filtered by simulated status based on
             `get_simulated` parameter.
     """
     return [event for event in events if event.get("simulated") is get_simulated]
@@ -437,13 +444,13 @@ def filter_high_effort(
     """Filter throw events based on high effort status.
 
     Args:
-        events (List[Dict[str, Any]]): Individual throw data from `get_events` endpoint.
+        events (list[dict[str, Any]]): Individual throw data from `get_events` endpoint.
         get_high_effort (bool): If true, will return high effort throw
             events. If false, will return throw events not marked as high effort.
             Defaults to true.
 
     Returns:
-        List[Dict[str, Any]]: Throw events filtered by high effort events basedon
+        list[dict[str, Any]]: Throw events filtered by high effort events basedon
             `get_high_effort` parameter.
     """
     return [event for event in events if event.get("highEffort") is get_high_effort]
@@ -457,7 +464,7 @@ def sum_workload(events: list[dict[str, Any]], normalized: bool = True) -> float
     """Compute sum of workloads from individual throw events.
 
     Args:
-        events (List[Dict[str, Any]]): Individual throw data from `get_events` endpoint.
+        events (list[dict[str, Any]]): Individual throw data from `get_events` endpoint.
         normalized (bool): If true, will return normalized data. If false,
             will return unnormalized data. Defaults to true.
 
@@ -484,7 +491,7 @@ def compute_acute_workload(
     and will adjust the acute divisor accordingly.
 
     Args:
-        snapshots (List[Dict[str, Any]]): Daily snapshot data from `get_snapshots`
+        snapshots (list[dict[str, Any]]): Daily snapshot data from `get_snapshots`
             endpoint.
         end_date (str, optional): Date for which to get acute workload. Expected in ISO
             8601 format (YYYY-MM-DD). Defaults to the most recent date in `snapshots`.
@@ -522,7 +529,7 @@ def compute_chronic_workload(
     and will adjust the chronic divisor accordingly.
 
     Args:
-        snapshots (List[Dict[str, Any]]): Daily snapshot data from `get_snapshots`
+        snapshots (list[dict[str, Any]]): Daily snapshot data from `get_snapshots`
             endpoint.
         end_date (str, optional): Date for which to get chronic workload. Expected in
             ISO 8601 format (YYYY-MM-DD). Defaults to the most recent date in
@@ -558,7 +565,7 @@ def compute_acr(
     """Compute acute/chronic workload ratio from daily snapshots.
 
     Args:
-        snapshots (List[Dict[str, Any]]): Daily snapshot data from `get_snapshots`
+        snapshots (list[dict[str, Any]]): Daily snapshot data from `get_snapshots`
             endpoint.
         end_date (str, optional): Date for which to get acute/chronic workload ratio.
             Expected in ISO 8601 format (YYYY-MM-DD). Defaults to the most recent date

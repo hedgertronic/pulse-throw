@@ -27,7 +27,6 @@ repos:
         language: system
         types: [python]
         require_serial: true
-        args: [--darglint-ignore-regex]
       - id: isort
         name: isort
         entry: isort
@@ -52,8 +51,3 @@ repos:
         language: system
         types: [python]
         args: [--py37-plus]
-  - repo: https://github.com/terrencepreilly/darglint
-    rev: v1.8.1
-    hooks:
-    - id: darglint
-      stages: [manual]
