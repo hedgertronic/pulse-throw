@@ -132,6 +132,8 @@ Returns info about the owner of the session's team.
             "email": "<player-email>"
         },
         ...
+    ]
+}
 ```
 
 ### Get Snapshots
@@ -170,6 +172,8 @@ Gets daily snapshots generated for one or more users over a range of dates. The 
             ]
         },
         ...
+    ]
+}
 ```
 
 ### Get Events
@@ -207,6 +211,8 @@ Gets all of the individual throw events for one or more users over a range of da
             "normalizedWorkload": 0.10925094783306122
         },
         ...
+    ]
+}
 ```
 
 ## Data Filtering Functions
