@@ -16,7 +16,6 @@ requests = "^2.28.1"
 [tool.poetry.dev-dependencies]
 black = "^22.6.0"
 coverage = { version = "^6.4.4", extras = ["toml"] }
-darglint = "^1.8.1"
 flake8 = "^4.0.1"
 flake8-bandit = "^3.0.0"
 flake8-bugbear = "^22.7.1"
@@ -37,8 +36,8 @@ tryceratops = "^1.1.0"
 types-requests = "^2.28.4"
 
 [tool.coverage.paths]
-source = ["pulse.py"]
-tests = ["test_pulse.py"]
+source = ["pulse_throw.py"]
+tests = ["test_pulse_throw.py"]
 
 [tool.coverage.report]
 fail_under = 100
