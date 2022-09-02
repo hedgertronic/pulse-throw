@@ -280,18 +280,18 @@ class PulseClient:
                     "<id>": [
                         {
                             "eventId": "POC6TE5b8V",
-                            "scaler": null,
+                            "scaler": None,
                             "datetime": "2021-03-01T15:49:55.000Z",
-                            "tag": null,
+                            "tag": None,
                             "armSlot": 59.782794823856534,
                             "armSpeed": 452.4706718068326,
                             "shoulderRotation": 155.58127276383868,
                             "torque": 34.744537353515625,
-                            "ballVelocity": null,
-                            "highEffort": false,
+                            "ballVelocity": None,
+                            "highEffort": False,
                             "ballWeight (oz)": 5.11472,
                             "preferredBallWeightUnit": "OZ",
-                            "simulated": null,
+                            "simulated": None,
                             "workload": 100.728515625,
                             "normalizedWorkload": 0.10925094783306122
                         },

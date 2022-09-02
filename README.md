@@ -4,6 +4,8 @@ Tools for acquiring and analyzing Pulse API data.
 
 [Pulse](https://www.drivelinebaseball.com/pulse/) is a wearable sensor for baseball players to monitor throwing workload.
 
+## Contents <!-- omit in toc -->
+
 - [Installation](#installation)
 - [Getting Started](#getting-started)
 - [API Requests](#api-requests)
@@ -11,6 +13,7 @@ Tools for acquiring and analyzing Pulse API data.
   - [Get Team](#get-team)
   - [Get Snapshots](#get-snapshots)
   - [Get Events](#get-events)
+- [Usage With DataFrame](#usage-with-dataframe)
 - [Data Filtering Functions](#data-filtering-functions)
   - [Filter By Tag](#filter-by-tag)
   - [Filter Simulated](#filter-simulated)
@@ -99,7 +102,7 @@ Returns info about the owner of the session.
 
 **Example Response**:
 
-```json
+```python
 {
   "id": "<id>",
   "firstName": "<first-name>",
@@ -118,7 +121,7 @@ Returns info about the owner of the session's team.
 
 **Example Response**:
 
-```json
+```python
 {
     "team": {
         "name": "TEAMNAME",
@@ -152,7 +155,7 @@ Gets daily snapshots generated for one or more users over a range of dates. The 
 
 **Example Response**:
 
-```json
+```python
 {
     "<id>": [
         {
@@ -192,23 +195,23 @@ Gets all of the individual throw events for one or more users over a range of da
 
 **Example Response**:
 
-```json
+```python
 {
     "<id>": [
         {
             "eventId": "POC6TE5b8V",
-            "scaler": null,
+            "scaler": None,
             "datetime": "2021-03-01T15:49:55.000Z",
-            "tag": null,
+            "tag": None,
             "armSlot": 59.782794823856534,
             "armSpeed": 452.4706718068326,
             "shoulderRotation": 155.58127276383868,
             "torque": 34.744537353515625,
-            "ballVelocity": null,
-            "highEffort": false,
+            "ballVelocity": None,
+            "highEffort": False,
             "ballWeight (oz)": 5.11472,
             "preferredBallWeightUnit": "OZ",
-            "simulated": null,
+            "simulated": None,
             "workload": 100.728515625,
             "normalizedWorkload": 0.10925094783306122
         },
@@ -216,6 +219,106 @@ Gets all of the individual throw events for one or more users over a range of da
     ]
 }
 ```
+
+## Usage With DataFrame
+
+Using Pulse API data with a Pandas DataFrame is very straightforward:
+
+```python
+>>> snapshots = client.get_snapshots()
+>>> pd.DataFrame(snapshots[client.user_id])
+
+         date  throwCount  highEffortThrowCount  acuteWorkload  \
+0  2022-08-25          31                    20   11952.933733
+1  2022-08-26          72                    48   12251.629390
+2  2022-08-27          56                    18   11249.457626
+3  2022-08-28         176                   145   13241.571388
+4  2022-08-29           0                     0   12132.189473
+5  2022-08-30          62                    20   11572.645582
+6  2022-08-31          65                    36   12075.297746
+7  2022-09-01          49                    15    9738.659914
+8  2022-09-02           0                     0    8390.232797
+
+   chronicWorkload  normAcuteWorkload  normChronicWorkload  workloadRatio  \
+0     11246.190459          16.619434            15.636774       1.062843
+1     11384.152924          17.034743            15.828598       1.076200
+2     11121.532242          15.641317            15.463449       1.011502
+3     11650.914981          18.411164            16.199506       1.136526
+4     11650.914981          16.868673            16.199506       1.041308
+5     11687.992378          16.090679            16.251058       0.990131
+6     11562.057889          16.789570            16.075958       1.044390
+7     11523.666522          13.540694            16.022579       0.845101
+8     10797.709718          11.665833            15.013204       0.777038
+
+   dailyWorkload  normDailyWorkload  \
+0    5144.875027           7.153427
+1   12124.726038          16.858203
+2    6321.565857           8.789497
+3   32827.030812          45.642660
+4       0.000000           0.000000
+5    8166.044329          11.354057
+6    9547.085176          13.274255
+7    5729.350730           7.966082
+8       0.000000           0.000000
+
+                    baseballProjectedOneDayWorkloads
+0  [24.089221616656328, 16.56913593881418, 37.272...
+1  [29.527065038098115, 40.09697202261785, 0, 25....
+2  [50.66824711842194, 0, 26.841686804976792, 37....
+3  [0, 30, 70, 0, 25.73377540372583, 11.208688593...
+4  [30, 38.04141022232487, 0, 29.14158049224935, ...
+5  [38.04141022232487, 0, 30, 30, 15.565793655546...
+6  [0, 30, 30, 30, 0, 30, 30, 0, 26.2226596467895...
+7  [30, 30, 19.098921681830898, 0, 30, 30, 0, 27....
+8  [30, 30, 0, 30, 30, 0, 30, 18.888786678880873,...
+
+[9 rows x 11 columns]
+
+>>> events = client.get_events()
+>>> pd.DataFrame(events[client.user_id])
+
+        eventId scaler                  datetime   tag    armSlot    armSpeed  \
+0    xNNOY5GBCv   None  2022-08-25T18:42:27.000Z  None  39.011018  330.794549
+1    53i2oQx53q   None  2022-08-25T18:42:31.000Z  None  29.182062  383.459351
+2    TegHm4tdvP   None  2022-08-25T18:42:34.000Z  None  22.965265  351.637081
+3    g6eP3tsucf   None  2022-08-25T18:42:37.000Z  None  23.100885  422.844626
+4    57SCmdrwPQ   None  2022-08-25T18:42:40.000Z  None  27.501726  399.794249
+..          ...    ...                       ...   ...        ...         ...
+506  GeXBh31fBE   None  2022-09-01T18:50:04.000Z  None   0.100000  907.755746
+507  nAtPE2rIFs   None  2022-09-01T18:50:12.000Z  None   9.234862  381.136577
+508  mCZZxMKin4   None  2022-09-01T18:50:17.000Z  None  26.717210  244.712983
+509  JqIj8m5NLE   None  2022-09-01T18:50:23.000Z  None  21.914508  255.154921
+510  FiwpRgMXEI   None  2022-09-01T18:51:08.000Z  None   0.100000   98.299791
+
+     shoulderRotation     torque ballVelocity  highEffort  ballWeight (oz)  \
+0          148.981671  28.648439         None       False          5.11472
+1          160.395491  28.523619         None       False          5.11472
+2          159.953864  28.265261         None       False          5.11472
+3          164.191710  36.169968         None       False          5.11472
+4          156.744317  33.482159         None       False          5.11472
+..                ...        ...          ...         ...              ...
+506        180.999999  59.939060         None        True          5.11472
+507        170.765138  26.342402         None       False          5.11472
+508        160.575152  13.585204         None       False          5.11472
+509        158.549454  15.364590         None       False          5.11472
+510        178.999997   2.170652         None       False          5.11472
+
+    preferredBallWeightUnit  simulated    workload  normalizedWorkload
+0                        OZ      False   78.384682            0.108986
+1                        OZ      False   77.940994            0.108369
+2                        OZ      False   77.024490            0.107095
+3                        OZ      False  106.133499            0.147568
+4                        OZ      False   95.996948            0.133474
+..                      ...        ...         ...                 ...
+506                      OZ      False  204.655212            0.284552
+507                      OZ      False   70.283264            0.097722
+508                      OZ      False   29.715700            0.041317
+509                      OZ      False   34.872028            0.048486
+510                      OZ      False    2.738843            0.003808
+
+[511 rows x 15 columns]
+```
+
 
 ## Data Filtering Functions
 
