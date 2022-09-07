@@ -32,7 +32,7 @@ def client():
     return pt.PulseClient(client_id, client_secret, refresh_token, authenticate=False)
 
 
-@pytest.mark.vcr(before_record_response=lambda r: None)
+# @pytest.mark.vcr
 @pytest.fixture
 def auth_client():
     return pt.PulseClient(client_id, client_secret, refresh_token)
@@ -440,6 +440,21 @@ class TestPulseClient:
 
         assert client.user_id
         assert str(client) == f"PulseClient({client.user_id})"
+
+    @pytest.mark.vcr
+    def test_authenticated_client(self, auth_client: pt.PulseClient):
+        assert auth_client.is_authenticated()
+        assert auth_client.session.token
+
+        assert auth_client.user_id
+        assert str(auth_client) == f"PulseClient({auth_client.user_id})"
+
+    @pytest.mark.vcr
+    def test_refresh_token(self, auth_client: pt.PulseClient):
+        auth_client.session.refresh_token(f"{auth_client.API_URL}/oauth/token")
+
+        assert auth_client.is_authenticated()
+        assert auth_client.session.token
 
     ####################################################################################
     # API ENDPOINT TESTS
