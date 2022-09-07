@@ -225,6 +225,8 @@ Gets all of the individual throw events for one or more users over a range of da
 Using Pulse API data with a Pandas DataFrame is very straightforward:
 
 ```python
+>>> import pandas as pd
+
 >>> snapshots = client.get_snapshots()
 >>> pd.DataFrame(snapshots[client.user_id])
 
