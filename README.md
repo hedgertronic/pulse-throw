@@ -57,7 +57,7 @@ client_secret = os.getenv("CLIENT_SECRET") or ""
 refresh_token = os.getenv("REFRESH_TOKEN") or ""
 ```
 
-Once the environment variables are loaded, a `PulseClient` object can created:
+Once the environment variables are loaded, a `PulseClient` object can be created:
 
 ```python
 import pulse_throw as pt
