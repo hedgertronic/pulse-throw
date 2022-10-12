@@ -25,7 +25,6 @@ Examples:
 
         client = pt.PulseClient(client_id, client_secret, refresh_token)
         ...
-        del client
 
         with pt.PulseClient(client_id, client_secret, refresh_token) as client:
             ...
@@ -40,6 +39,8 @@ Examples:
         print(snapshots[client.user_id])
 
 Attributes:
+    API_URL (str): Base URL for API requests.
+
     ACUTE_LENGTH (int): Length in days for the acute workload window.
     ACUTE_WEIGHTS (list[float]): Weights used for acute workload calculations.
 
@@ -55,8 +56,12 @@ from authlib.integrations.base_client.errors import MissingTokenError
 from authlib.integrations.requests_client import OAuth2Session
 
 
+API_URL = "https://pulse-server.drivelinebaseball.com/third_party_api"
+
+
 ACUTE_LENGTH = 9  # days
-ACUTE_WEIGHTS = [1.3, 1.225, 1.15, 1.075, 1.0, 0.925, 0.85, 0.775, 0.7]
+ACUTE_WEIGHTS = (1.3, 1.225, 1.15, 1.075, 1.0, 0.925, 0.85, 0.775, 0.7)
+
 
 CHRONIC_LENGTH = 28  # days
 
@@ -69,7 +74,6 @@ class PulseClient:
     """Make requests to the Pulse API.
 
     Attributes:
-        API_URL (str): Base URL for API requests.
         session (authlib.OAuth2Session): OAuth2Session for accessing the Pulse API.
         user_id (str): User ID of the owner of the session. Will default to an empty
             string before the session is authenticated and then replaced by the correct
@@ -78,8 +82,6 @@ class PulseClient:
     Raises:
         ValueError: If `start_date` is after `end_date`.
     """
-
-    API_URL = "https://pulse-server.drivelinebaseball.com/third_party_api"
 
     ####################################################################################
     # DUNDER METHODS
@@ -112,7 +114,7 @@ class PulseClient:
         self.session = OAuth2Session(
             client_id,
             client_secret,
-            token_endpont=f"{self.API_URL}/oauth/token",
+            token_endpont=f"{API_URL}/oauth/token",
             **kwargs,
         )
 
@@ -120,10 +122,6 @@ class PulseClient:
 
         if authenticate:
             self.authenticate()
-
-    def __del__(self) -> None:
-        """Close the OAuth2Session."""
-        self.session.close()
 
     def __enter__(self) -> PulseClient:
         """Enter a context manager.
@@ -139,7 +137,7 @@ class PulseClient:
         Args:
             _ (Any): Exception arguments passed when closing context manager.
         """
-        del self
+        self.close()
 
     def __str__(self) -> str:
         """Generate string representation of client.
@@ -149,6 +147,10 @@ class PulseClient:
                 session.
         """
         return f"PulseClient({self.user_id if self.user_id else '<Unauthenticated>'})"
+
+    def close(self) -> None:
+        """Close the OAuth2 Session."""
+        self.session.close()
 
     ####################################################################################
     # API ENDPOINTS
@@ -245,10 +247,19 @@ class PulseClient:
                     ]
                 }
         """
+        start, end = self._format_dates(start_date, end_date)
+        users = self._format_user_ids(user_ids)
+
         return self._make_request(
             method="POST",
             url_slug="user/get_snapshots",
-            json=self._format_payload(start_date, end_date, user_ids),
+            json={
+                "payload": {
+                    "pulseUserIds": users,
+                    "startDate": start,
+                    "endDate": end,
+                },
+            },
         )
 
     def get_events(
@@ -299,10 +310,19 @@ class PulseClient:
                     ]
                 }
         """
+        start, end = self._format_dates(start_date, end_date)
+        users = self._format_user_ids(user_ids)
+
         return self._make_request(
             method="POST",
             url_slug="user/get_events",
-            json=self._format_payload(start_date, end_date, user_ids),
+            json={
+                "payload": {
+                    "pulseUserIds": users,
+                    "startDate": start,
+                    "endDate": end,
+                },
+            },
         )
 
     ####################################################################################
@@ -318,7 +338,7 @@ class PulseClient:
             kwargs (dict[str, Any], optional): Additional arguments for `fetch_token()`.
         """
         self.session.fetch_token(
-            url=f"{self.API_URL}/oauth/token",
+            url=f"{API_URL}/oauth/token",
             grant_type="refresh_token",
             refresh_token=self._refresh_token,
             **kwargs,
@@ -340,7 +360,7 @@ class PulseClient:
     ) -> dict[str, Any]:
         try:
             response = self.session.request(
-                method=method, url=f"{self.API_URL}/{url_slug}", timeout=30, **kwargs
+                method=method, url=f"{API_URL}/{url_slug}", timeout=30, **kwargs
             )
         except MissingTokenError as exc:
             raise MissingTokenError(
@@ -350,23 +370,6 @@ class PulseClient:
         response.raise_for_status()
 
         return response.json()["data"]
-
-    def _format_payload(
-        self,
-        start_date: str | None,
-        end_date: str | None,
-        user_ids: str | list[str] | None,
-    ) -> dict[str, dict[str, str | list[str]]]:
-        start, end = self._format_dates(start_date, end_date)
-        users = self._format_user_ids(user_ids)
-
-        return {
-            "payload": {
-                "pulseUserIds": users,
-                "startDate": start,
-                "endDate": end,
-            },
-        }
 
     def _format_user_ids(self, user_ids: str | list[str] | None) -> list[str]:
         if not user_ids:
@@ -415,9 +418,9 @@ def filter_by_tag(
         tags = [tags]
 
     return (
-        [event for event in events if event.get("tag") in tags]
-        if not blacklist
-        else [event for event in events if event.get("tag") not in tags]
+        [event for event in events if event.get("tag") not in tags]
+        if blacklist
+        else [event for event in events if event.get("tag") in tags]
     )
 
 

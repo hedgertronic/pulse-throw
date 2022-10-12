@@ -62,14 +62,11 @@ Once the environment variables are loaded, a `PulseClient` object can created:
 ```python
 import pulse_throw as pt
 
-# Using a traditional constructor and destructor
+# Using a traditional constructor
 client = pt.PulseClient(client_id, client_secret, refresh_token)
-
 ...
 
-del client
-
-# Using a context manager that destructs automatically
+# Using a context manager
 with pt.PulseClient(client_id, client_secret, refresh_token) as client:
     ...
 ```
@@ -82,10 +79,7 @@ client = pt.PulseClient(
 )
 
 client.authenticate()
-
 ...
-
-del client
 ```
 
 ## API Requests
