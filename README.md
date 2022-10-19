@@ -2,7 +2,7 @@
 
 Tools for acquiring and analyzing Pulse API data.
 
-[Pulse](https://www.drivelinebaseball.com/pulse/) is a wearable sensor for baseball players to monitor throwing workload.
+[Pulse](https://www.drivelinebaseball.com/pulse/) (formerly Motus) is a wearable sensor for baseball players to monitor throwing workload.
 
 ## Contents <!-- omit in toc -->
 
