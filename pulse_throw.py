@@ -74,9 +74,8 @@ class PulseClient:
 
     Attributes:
         session (authlib.OAuth2Session): OAuth2Session for accessing the Pulse API.
-        user_id (str): User ID of the owner of the session. Will default to an empty
-            string before the session is authenticated and then replaced by the correct
-            user ID once a token is fetched.
+        user_id (str): User ID of the owner of the session. Defaults to an empty
+            string until a supplied or fetched token includes a user ID.
 
     Raises:
         ValueError: If `start_date` is after `end_date`.
@@ -110,14 +109,15 @@ class PulseClient:
         self._client_secret = client_secret
         self._refresh_token = refresh_token
 
+        kwargs.setdefault("token_endpoint", f"{API_URL}/oauth/token")
         self.session = OAuth2Session(
             client_id,
             client_secret,
-            token_endpont=f"{API_URL}/oauth/token",
             **kwargs,
         )
 
         self.user_id = ""
+        self._sync_user_id()
 
         if authenticate:
             self.authenticate()
@@ -330,27 +330,37 @@ class PulseClient:
     def authenticate(self, **kwargs: Any) -> None:
         """Authenticate OAuth2Session by fetching token.
 
-        If `user_id` is `None`, it will be set according to the `user_id` returned with
-        the token.
+        Uses the latest session refresh token, falling back to the constructor's
+        refresh token. A response without a new refresh token retains the one used.
+        Updates `user_id` when the response includes a non-null user ID; otherwise
+        retains the known identity.
 
         Args:
             kwargs (dict[str, Any], optional): Additional arguments for `fetch_token()`.
         """
-        self.session.fetch_token(
+        refresh_token = (self.session.token or {}).get("refresh_token")
+        refresh_token = refresh_token or self._refresh_token
+        token = self.session.fetch_token(
             url=f"{API_URL}/oauth/token",
             grant_type="refresh_token",
-            refresh_token=self._refresh_token,
+            refresh_token=refresh_token,
             **kwargs,
         )
+        token.setdefault("refresh_token", refresh_token)
+        self._sync_user_id()
 
-        if not self.user_id:
-            self.user_id = str(self.session.token.get("user_id"))
+    def _sync_user_id(self) -> None:
+        user_id = (self.session.token or {}).get("user_id")
+        if user_id is not None:
+            self.user_id = str(user_id)
 
     def is_authenticated(self) -> bool:
         """Check if the OAuth2Session is authenticated.
 
         Returns:
             bool: Whether the OAuth2Session has a token and is therefore authenticated.
+                An expired token still counts; Authlib refreshes it on the next request
+                when a refresh token is available. This does not check server validity.
         """
         return self.session.token is not None
 
