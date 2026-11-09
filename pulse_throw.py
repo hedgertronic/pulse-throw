@@ -55,7 +55,6 @@ from typing import Any
 from authlib.integrations.base_client.errors import MissingTokenError
 from authlib.integrations.requests_client import OAuth2Session
 
-
 API_URL = "https://pulse-server.drivelinebaseball.com/third_party_api"
 
 
@@ -92,8 +91,8 @@ class PulseClient:
         client_secret: str,
         refresh_token: str,
         authenticate: bool = True,
-        **kwargs,
-    ):
+        **kwargs: Any,
+    ) -> None:
         """Initialize an OAuth2 session for making API requests.
 
         Optionally makes a request to the Pulse API to acquire an access token.
@@ -131,7 +130,7 @@ class PulseClient:
         """
         return self
 
-    def __exit__(self, *_) -> None:
+    def __exit__(self, *_: object) -> None:
         """Exit a context manager by closing the OAuth2 session.
 
         Args:
@@ -328,7 +327,7 @@ class PulseClient:
     ####################################################################################
     # API HELPER METHODS
 
-    def authenticate(self, **kwargs) -> None:
+    def authenticate(self, **kwargs: Any) -> None:
         """Authenticate OAuth2Session by fetching token.
 
         If `user_id` is `None`, it will be set according to the `user_id` returned with

@@ -7,7 +7,6 @@ from dotenv import load_dotenv
 
 import pulse_throw as pt
 
-
 load_dotenv()
 
 client_id = os.getenv("CLIENT_ID") or ""
@@ -431,6 +430,7 @@ class TestPulseClient:
         assert not client.user_id
         assert str(client) == "PulseClient(<Unauthenticated>)"
 
+    @pytest.mark.live
     @pytest.mark.vcr
     def test_authenticate(self, client: pt.PulseClient):
         client.authenticate()
@@ -441,6 +441,7 @@ class TestPulseClient:
         assert client.user_id
         assert str(client) == f"PulseClient({client.user_id})"
 
+    @pytest.mark.live
     @pytest.mark.vcr
     def test_authenticated_client(self, auth_client: pt.PulseClient):
         assert auth_client.is_authenticated()
@@ -449,9 +450,10 @@ class TestPulseClient:
         assert auth_client.user_id
         assert str(auth_client) == f"PulseClient({auth_client.user_id})"
 
+    @pytest.mark.live
     @pytest.mark.vcr
     def test_refresh_token(self, auth_client: pt.PulseClient):
-        auth_client.session.refresh_token(f"{auth_client.API_URL}/oauth/token")
+        auth_client.session.refresh_token(f"{pt.API_URL}/oauth/token")
 
         assert auth_client.is_authenticated()
         assert auth_client.session.token
@@ -463,6 +465,7 @@ class TestPulseClient:
         with pytest.raises(MissingTokenError):
             client.get_profile()
 
+    @pytest.mark.live
     @pytest.mark.vcr
     def test_get_profile(self, auth_client: pt.PulseClient):
         profile = auth_client.get_profile()
@@ -476,6 +479,7 @@ class TestPulseClient:
 
         assert profile["id"] == auth_client.user_id
 
+    @pytest.mark.live
     @pytest.mark.vcr
     def test_get_team(self, auth_client: pt.PulseClient):
         team = auth_client.get_team()
@@ -502,6 +506,7 @@ class TestPulseClient:
         assert isinstance(member.get("lastName"), str)
         assert isinstance(member.get("email"), str)
 
+    @pytest.mark.live
     @pytest.mark.vcr
     def test_get_snapshots(self, auth_client: pt.PulseClient):
         snapshots = auth_client.get_snapshots(end_date="2022-08-22")
@@ -531,6 +536,7 @@ class TestPulseClient:
         for item in proj_workloads:
             assert isinstance(item, int | float)
 
+    @pytest.mark.live
     @pytest.mark.vcr
     def test_get_events(self, auth_client: pt.PulseClient):
         events = auth_client.get_events()
@@ -560,6 +566,7 @@ class TestPulseClient:
     ####################################################################################
     # API HELPER METHOD TESTS
 
+    @pytest.mark.live
     def test_format_user_ids(self, auth_client: pt.PulseClient):
         test_id = "abc123"
         test_list = ["abc123", "def456", "ghi789"]
@@ -650,13 +657,13 @@ def test_filter_simulated(sample_event_data):
 
     for item in non_simulated:
         assert isinstance(item, dict)
-        assert item.get("simulated") == False
+        assert item.get("simulated") is False
 
     assert isinstance(simulated, list)
 
     for item in simulated:
         assert isinstance(item, dict)
-        assert item.get("simulated") == True
+        assert item.get("simulated") is True
 
 
 def test_filter_high_effort(sample_event_data):
@@ -667,13 +674,13 @@ def test_filter_high_effort(sample_event_data):
 
     for item in high_effort:
         assert isinstance(item, dict)
-        assert item.get("highEffort") == True
+        assert item.get("highEffort") is True
 
     assert isinstance(low_effort, list)
 
     for item in low_effort:
         assert isinstance(item, dict)
-        assert item.get("highEffort") == False
+        assert item.get("highEffort") is False
 
 
 ########################################################################################
