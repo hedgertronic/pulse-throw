@@ -566,14 +566,14 @@ class TestPulseClient:
     ####################################################################################
     # API HELPER METHOD TESTS
 
-    @pytest.mark.live
-    def test_format_user_ids(self, auth_client: pt.PulseClient):
+    def test_format_user_ids(self, client: pt.PulseClient):
+        client.user_id = "owner"
         test_id = "abc123"
         test_list = ["abc123", "def456", "ghi789"]
 
-        assert auth_client._format_user_ids(None) == [auth_client.user_id]
-        assert auth_client._format_user_ids(test_id) == [test_id]
-        assert auth_client._format_user_ids(test_list) == test_list
+        assert client._format_user_ids(None) == [client.user_id]
+        assert client._format_user_ids(test_id) == [test_id]
+        assert client._format_user_ids(test_list) == test_list
 
     def test_format_user_ids_unauthenticated(self, client: pt.PulseClient):
         assert client._format_user_ids(None) == [client.user_id]

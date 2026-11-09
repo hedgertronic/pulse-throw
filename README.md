@@ -82,6 +82,18 @@ client.authenticate()
 ...
 ```
 
+When the session has a refresh token, Authlib refreshes expired access tokens before
+the next API request. Calling `authenticate()` again also uses the
+latest refresh token. If a token response omits a replacement refresh token, the token
+used for that request is retained. Persist rotated tokens yourself if you need them
+across client instances.
+
+`is_authenticated()` checks whether a session token exists; it does not check expiry,
+server acceptance, or whether `user_id` is known. `user_id` starts as `""` until a
+supplied or fetched token includes it. A later manual authentication updates a supplied
+identity and retains the known identity when that field is omitted or null. Use the
+context manager to release connections on both normal and exceptional exit.
+
 ## API Requests
 
 There are four different API requests that `PulseClient` can make.
